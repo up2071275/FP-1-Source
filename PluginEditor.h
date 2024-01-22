@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+
 //==============================================================================
 /**
 */
@@ -76,6 +77,19 @@ private:
   
     juce::AudioProcessorValueTreeState::SliderAttachment wetDryAttachtment, outputAttachtment, gainAttachtment, userCutoffAttachtment, envelopePercentageAttachtment, userReleaseAttachtment, userAttackAttachtment;
     juce::AudioProcessorValueTreeState::ComboBoxAttachment filterModelAttachtment;
+
+    
+    //
+    juce::Point<float> generatePointWithRandomness(juce::Point<float> p, const float level)
+    {
+        p.addXY(random.nextFloat() * level * 8.f, random.nextFloat() * level * 8.f);
+        return p;
+    }
+
+    std::function<float()> valueSupplier;
+    const juce::Colour colour;
+    juce::Random random{ juce::Time::currentTimeMillis() };
+    //
 
     //juce::StringArray filterModels = { "Lowpass","Highpass","Bandpass" };
 

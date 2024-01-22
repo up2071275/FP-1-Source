@@ -10,6 +10,7 @@
 #include "PluginEditor.h"
 #include "Parameters/Parameters.h"
 
+
 //==============================================================================
 FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p),
@@ -140,8 +141,73 @@ void FilterTripAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour(juce::Colours::white);
     g.drawRect(getLocalBounds(), 1);
+    
+    
     g.setColour(juce::Colours::red);
     juce::Path path;
+    const int numSamples = mEnvelopeBuffer.getNumSamples();
+
+    //
+    //const auto level = jlimit(0.f, 1.f, jmap(valueSupplier(), -60.f, 6.f, 0.f, 1.f));
+    juce::Path referencePath{};
+    referencePath.addEllipse(getLocalBounds().toFloat().reduced(bounds.proportionOfHeight(0.099f + 0.4f * (1.f - numSamples))));
+
+    juce::Path ellipse{};
+    const auto numberOfPoints = 50;
+
+    const auto ellipseLength = referencePath.getLength();
+    const auto startingPoint = generatePointWithRandomness(referencePath.getPointAlongPath(0.f), numSamples);
+    ellipse.startNewSubPath(startingPoint);
+    //
+
+
+    //const int numSamples = mEnvelopeBuffer.getNumSamples();
+    for (auto i = 1; i <= numberOfPoints; i++)
+    {
+        if (i == numberOfPoints)
+            ellipse.lineTo(startingPoint);
+        else
+            ellipse.lineTo(generatePointWithRandomness(referencePath.getPointAlongPath(ellipseLength * i / numberOfPoints), numSamples));
+    }
+
+
+    /*
+    for (int i = 0; i < numSamples; i++) {
+        const float x = getWidth() * static_cast<float>(i) / static_cast<float>(numSamples - 1);
+        const float y = (getHeight() * (1.0f - mEnvelopeBuffer.getSample(0, i))) - (getHeight() * 0.35);
+
+        
+        if (i == 0) {
+            ellipse.lineTo(startingPoint);
+        }
+        else {
+            ellipse.lineTo(generatePointWithRandomness(referencePath.getPointAlongPath(ellipseLength * i / numberOfPoints), numSamples));
+        }
+        */
+        ellipse.closeSubPath();
+        ellipse = ellipse.createPathWithRoundedCorners(2.f);
+        
+        const auto affine = juce::AffineTransform::translation(-4.f * numSamples, -4.f * numSamples);
+        ellipse.applyTransform(affine);
+     
+        const auto gradient = juce::ColourGradient(colour.withAlpha(0.6f), { getWidth() / 2.f, getHeight() / 2.f }, colour.withAlpha(0.f), {}, true);
+        g.setGradientFill(gradient);
+        
+        g.strokePath(ellipse, juce::PathStrokeType{ 8.f * numSamples, juce::PathStrokeType::JointStyle::curved, juce::PathStrokeType::rounded });
+         
+        g.setColour(colour.withMultipliedLightness(1.f + numSamples * 0.3f));
+        g.strokePath(ellipse, juce::PathStrokeType{ 2.f + 1.f * numSamples, juce::PathStrokeType::JointStyle::curved, juce::PathStrokeType::rounded });
+        
+    
+
+
+
+
+    /*
+    
+    g.setColour(juce::Colours::red);
+    juce::Path path;
+     
     const int numSamples = mEnvelopeBuffer.getNumSamples();
     for (int i = 0; i < numSamples; i++) {
         const float x = getWidth() * static_cast<float>(i) / static_cast<float>(numSamples - 1);
@@ -154,12 +220,16 @@ void FilterTripAudioProcessorEditor::paint (juce::Graphics& g)
             path.lineTo(x, y);
         }
     }
-    g.strokePath(path, juce::PathStrokeType(8.0f));
+    */
+    //g.strokePath(path, juce::PathStrokeType(8.0f));
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-
+    
 
 
 }
+
+
+
 
 void FilterTripAudioProcessorEditor::resized()
 {
