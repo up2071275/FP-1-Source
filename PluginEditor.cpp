@@ -26,19 +26,19 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioP
 
     wetDrySlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     outputSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    gainSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    userCutoffSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    envelopePercentageSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    userCutoffSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    envelopePercentageSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     userAttackSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     userReleaseSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
 
     wetDrySlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
     outputSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
-    gainSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
-    userCutoffSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
-    envelopePercentageSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
-    userAttackSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
-    userReleaseSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
+    gainSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 60, 20);
+    userCutoffSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 60, 20);
+    envelopePercentageSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 60, 20);
+    userAttackSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 60, 20);
+    userReleaseSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 60, 20);
 
     wetDrySlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
     outputSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
@@ -48,15 +48,22 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioP
     userAttackSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
     userReleaseSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
 
+    //LOADING IMAGE ASSETS 21.0.1.24
+    Background = juce::ImageFileFormat::loadFrom(BinaryData::Background_png, BinaryData::Background_pngSize);
+    Dial = juce::ImageFileFormat::loadFrom(BinaryData::Dial_png, BinaryData::Dial_pngSize);
+    SliderDB = juce::ImageFileFormat::loadFrom(BinaryData::SliderDB_png, BinaryData::SliderDB_pngSize);
+    SliderHZ = juce::ImageFileFormat::loadFrom(BinaryData::SliderHZ_png, BinaryData::SliderHZ_pngSize);
+    //LOADING IMAGE ASSETS
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     
-    setResizable(true,true);
-    setResizeLimits(420, 270, 1680, 1080);
-    getConstrainer()->setFixedAspectRatio(1.55);
+    setResizable(false, false);
+    //setResizeLimits(420, 270, 1680, 1080);
+    //getConstrainer()->setFixedAspectRatio(1.55);
 
-    setSize(840, 540);
+    //setSize(840, 540);
+    setSize(630, 948);
     startTimerHz(240);
 
     //addAndMakeVisible(wetDrySlider);
@@ -70,6 +77,7 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioP
 
     //addAndMakeVisible(wetDryLabel);
     //addAndMakeVisible(outputLabel);
+    /*
     addAndMakeVisible(gainLabel);
     addAndMakeVisible(userCutoffLabel);
     addAndMakeVisible(envelopePercentageLabel);
@@ -101,6 +109,8 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioP
     userAttackLabel.setJustificationType(juce::Justification::centred);
     userReleaseLabel.setJustificationType(juce::Justification::centred);
 
+    */
+
     filterModelCombo.setTextWhenNothingSelected("Filter Model Selection");
     filterModelCombo.addItemList(audioProcessor.filterModels, 1);
 
@@ -115,16 +125,22 @@ void FilterTripAudioProcessorEditor::paint (juce::Graphics& g)
 {
     //g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
     g.fillAll(juce::Colours::lightslategrey);
+
+    //DRAWING ASSETS ON SCREEN 21.0.1.24
+    g.drawImage(Background, 0, 0, Background.getWidth(), Background.getHeight(), 0, 0, Background.getWidth(), Background.getHeight());
+    //g.drawImage(Dial, 61.59, 800.41, Dial.getWidth(), Dial.getHeight(), 0,0, Dial.getWidth(), Dial.getHeight());
+    //DRAWING ASSETS ON SCREEN
+
     auto bounds = getLocalBounds().toFloat();
   
 
     g.setColour(juce::Colours::floralwhite);
     g.setFont(36.0f);
-    g.drawFittedText("Filter Trip", getLocalBounds(), juce::Justification::centredTop, 36);
+    //g.drawFittedText("FP-1", getLocalBounds(), juce::Justification::centredTop, 36);
 
     g.setColour(juce::Colours::white);
     g.drawRect(getLocalBounds(), 1);
-    g.setColour(juce::Colours::rebeccapurple);
+    g.setColour(juce::Colours::red);
     juce::Path path;
     const int numSamples = mEnvelopeBuffer.getNumSamples();
     for (int i = 0; i < numSamples; i++) {
@@ -138,7 +154,7 @@ void FilterTripAudioProcessorEditor::paint (juce::Graphics& g)
             path.lineTo(x, y);
         }
     }
-    g.strokePath(path, juce::PathStrokeType(2.0f));
+    g.strokePath(path, juce::PathStrokeType(8.0f));
     // (Our component is opaque, so we must completely fill the background with a solid colour)
 
 
@@ -152,31 +168,15 @@ void FilterTripAudioProcessorEditor::resized()
     auto sliderSize = getWidth() * 0.15;
     auto sliderYpos = topMargin * 4.75;
  
-    //userAttackSlider.setBounds(leftMargin * 1.5, sliderYpos , sliderSize/2, sliderSize/2);
-    //userReleaseSlider.setBounds(leftMargin * 1.5, sliderYpos *1.225 , sliderSize / 2, sliderSize / 2);
 
+    userAttackSlider.setBounds(leftMargin *1.25, topMargin * 4.425, 106, 106);
+    userReleaseSlider.setBounds(leftMargin * 1.25, topMargin * 5.275, 106, 106);
 
-    //wetDrySlider.setBounds(leftMargin * 6.5, sliderYpos, sliderSize, sliderSize);
-    userAttackSlider.setBounds(leftMargin *13, sliderYpos, sliderSize, sliderSize);
-    userReleaseSlider.setBounds(leftMargin * 6.5, sliderYpos, sliderSize, sliderSize);
+    gainSlider.setBounds(leftMargin * 10.75, topMargin * 3.01, 25, 166);
+    userCutoffSlider.setBounds(leftMargin * 33.8, topMargin * 1.675, 166, 25);
+    envelopePercentageSlider.setBounds(leftMargin * 3.85, topMargin * 3, 25, 166);
 
-    gainSlider.setBounds(leftMargin * 26, sliderYpos, sliderSize, sliderSize);
-    //userCutoffSlider.setBounds(leftMargin * 19.5, sliderYpos, sliderSize, sliderSize);
-    userCutoffSlider.setBounds(leftMargin * 19.5, sliderYpos, sliderSize, sliderSize);
-    //outputSlider.setBounds(leftMargin * 26, sliderYpos, sliderSize, sliderSize);
-    envelopePercentageSlider.setBounds(leftMargin * 32.5, sliderYpos, sliderSize, sliderSize);
-    filterModelCombo.setBounds(leftMargin * 40, sliderYpos, sliderSize - leftMargin, sliderSize * 0.33);
-
-    /* 
-    wetDrySlider.setBounds(100, 390, 100, 100);
-    gainSlider.setBounds(200, 390, 100, 100);
-    outputSlider.setBounds(300, 390, 100, 100);
-    userCutoffSlider.setBounds(400, 390, 100, 100);
-    envelopePercentageSlider.setBounds(500, 390, 100, 100);
-
-    filterModelCombo.setBounds(600, 390, 150, 50);
-    */
-
+    filterModelCombo.setBounds(leftMargin * 36.65, topMargin * 1.085, 114, 48);
 
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..

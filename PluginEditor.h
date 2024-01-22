@@ -45,6 +45,13 @@ private:
     FilterTripAudioProcessor& audioProcessor;
     juce::AudioBuffer<float> mEnvelopeBuffer;
 
+
+    juce::Image Background;
+    juce::Image Dial;
+    juce::Image SliderDB;
+    juce::Image SliderHZ;
+   
+
     juce::Slider wetDrySlider;
     juce::Slider outputSlider;
     juce::Slider gainSlider;
