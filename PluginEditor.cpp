@@ -123,7 +123,7 @@ FilterTripAudioProcessorEditor::~FilterTripAudioProcessorEditor()
 }
 
 //==============================================================================
-void FilterTripAudioProcessorEditor::paint (juce::Graphics& g)
+void FilterTripAudioProcessorEditor::paint(juce::Graphics& g)
 {
     //g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
     g.fillAll(juce::Colours::lightslategrey);
@@ -134,75 +134,80 @@ void FilterTripAudioProcessorEditor::paint (juce::Graphics& g)
     //DRAWING ASSETS ON SCREEN
 
     auto bounds = getLocalBounds().toFloat();
-    
+
     g.setColour(juce::Colours::red);
     juce::Path path;
-    
+
+    const float centerX = 409.11;
+    const float centerY = 680.81;
+
     const int numSamples = mEnvelopeBuffer.getNumSamples();
-    
-    for (int i = 0; i < numSamples; i++) {
-        const float x = getWidth() * 0.5f; // Center x-coordinate
-        const float y = getHeight() * 0.5f; // Center y-coordinate
 
-        const float radius = (getHeight() * 0.35) * mEnvelopeBuffer.getSample(0, i); // Adjust multiplier as needed
+    if (numSamples > 0) {
+        const int numPoints = std::min(100, numSamples); // Adjust the number of points for smoother circles
 
-        // Create a circular path centered at (x, y) with an increasing radius
-        juce::Path ellipsePath;
-        ellipsePath.addEllipse(x - radius, y - radius, 2.0f * radius, 2.0f * radius);
+        const float minX = 200.0f; // Adjust as needed
+        const float minY = 200.0f; // Adjust as needed
+        const float maxX = 833.0f; // Adjust as needed
+        const float maxY = 833.0f; // Adjust as needed
 
-        // Add the circular path to the main path
-        if (i == 0) {
-            path.addPath(ellipsePath);
-        }
-        else {
-            path.addPath(ellipsePath, juce::AffineTransform::identity);
-        }
-    }
+        for (int i = 0; i < numPoints; i++) {
+            const float angle = juce::MathConstants<float>::twoPi * static_cast<float>(i) / numPoints;
+            float radius = (getHeight() * 0.35) * mEnvelopeBuffer.getSample(0, i % numSamples);
 
-    g.strokePath(path, juce::PathStrokeType(2.0f));
+            // Ensure the radius fits within the bounds
+            radius = std::min(radius, std::min(centerX - minX, maxX - centerX));
+            radius = std::min(radius, std::min(centerY - minY, maxY - centerY));
 
+            const float x = centerX + radius * std::cos(angle);
+            const float y = centerY + radius * std::sin(angle);
 
-    /*
-
-    for (int i = 0; i < numSamples; i++) {
-        const float x = getWidth() * static_cast<float>(i) / static_cast<float>(numSamples - 1);
-        const float y = (getHeight() * (1.0f - mEnvelopeBuffer.getSample(0, i))) - (getHeight() * 0.35);
-
-        if (i == 0) {
-            path.startNewSubPath(x, y);
-        }
-        else {
-            path.lineTo(x, y);
+            if (i == 0) {
+                path.startNewSubPath(x, y);
+            }
+            else {
+                path.lineTo(x, y);
+            }
         }
     }
-    g.strokePath(path, juce::PathStrokeType(8.0f));
-   */
-    /*
-    g.setColour(juce::Colours::red);
-    juce::Path path;
-     
-    const int numSamples = mEnvelopeBuffer.getNumSamples();
-    for (int i = 0; i < numSamples; i++) {
-        const float x = getWidth() * static_cast<float>(i) / static_cast<float>(numSamples - 1);
-        const float y = (getHeight() * (1.0f - mEnvelopeBuffer.getSample(0, i))) - (getHeight() * 0.35);
+    // Use numSamples directly to scale the stroke thickness
+    g.strokePath(path, juce::PathStrokeType(2.0f * static_cast<float>(numSamples) / 50.0f));
 
-        if (i == 0) {
-            path.startNewSubPath(x, y);
-        }
-        else {
-            path.lineTo(x, y);
-        }
-    }
-   
-    g.strokePath(path, juce::PathStrokeType(8.0f));
-    */
-
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    
 
 
 }
 
+    /*
+    g.setColour(juce::Colours::red);
+    juce::Path path;
+
+    const float centerX = 409.11;
+    const float centerY = 680.81;
+
+    const int numSamples = mEnvelopeBuffer.getNumSamples();
+
+    if (numSamples > 0) {
+        const int numPoints = std::min(100, numSamples); // Adjust the number of points for smoother circles
+
+        for (int i = 0; i < numPoints; i++) {
+            const float angle = juce::MathConstants<float>::twoPi * static_cast<float>(i) / numPoints;
+            const float radius = (getHeight() * 0.35) * mEnvelopeBuffer.getSample(0, i % numSamples); // Use the modulo to loop through numSamples
+
+            const float x = centerX + radius * std::cos(angle);
+            const float y = centerY + radius * std::sin(angle);
+
+            if (i == 0) {
+                path.startNewSubPath(x, y);
+            }
+            else {
+                path.lineTo(x, y);
+            }
+        }
+    }
+
+    g.strokePath(path, juce::PathStrokeType(10.0f));
+}
+*/
 
 
 

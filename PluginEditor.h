@@ -30,7 +30,7 @@ public:
         mEnvelopeBuffer = audioProcessor.getEnvelopeBuffer();
         //DBG(juce::String (mEnvelopeBuffer.getRMSLevel(0,0,mEnvelopeBuffer.getNumSamples())));
         repaint();
-
+        
     };
     
 
@@ -46,6 +46,8 @@ private:
     // access the processor object that created it.
     FilterTripAudioProcessor& audioProcessor;
     juce::AudioBuffer<float> mEnvelopeBuffer;
+
+   
 
 
     juce::Image Background;
