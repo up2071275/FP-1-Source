@@ -10,6 +10,9 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "LookAndFeel/DialLAF.h"
+#include "LookAndFeel/SliderLAF.h"
+#include "LookAndFeel/ComboLAF.h"
 
 
 //==============================================================================
@@ -82,8 +85,9 @@ private:
     juce::AudioProcessorValueTreeState::ComboBoxAttachment filterModelAttachtment;
     
 
-
-
+    CustomDial customDialLAF;
+    CustomSlider customSliderLAF;
+    CustomCombo customComboLAF;
 
 
 

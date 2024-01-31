@@ -50,6 +50,15 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioP
     userAttackSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
     userReleaseSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
 
+    userAttackSlider.setLookAndFeel(&customDialLAF);
+    userReleaseSlider.setLookAndFeel(&customDialLAF);
+    gainSlider.setLookAndFeel(&customSliderLAF);
+    userCutoffSlider.setLookAndFeel(&customSliderLAF);
+    envelopePercentageSlider.setLookAndFeel(&customSliderLAF);
+    filterModelCombo.setLookAndFeel(&customComboLAF);
+
+
+
     //LOADING IMAGE ASSETS 21.0.1.24
     Background = juce::ImageFileFormat::loadFrom(BinaryData::Background_png, BinaryData::Background_pngSize);
     Dial = juce::ImageFileFormat::loadFrom(BinaryData::Dial_png, BinaryData::Dial_pngSize);
@@ -116,10 +125,20 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioP
     filterModelCombo.setTextWhenNothingSelected("Filter Model Selection");
     filterModelCombo.addItemList(audioProcessor.filterModels, 1);
 
+
+    
+
 }
 
 FilterTripAudioProcessorEditor::~FilterTripAudioProcessorEditor()
 {
+
+    userAttackSlider.setLookAndFeel(nullptr);
+    userReleaseSlider.setLookAndFeel(nullptr);
+    gainSlider.setLookAndFeel(nullptr);
+    userCutoffSlider.setLookAndFeel(nullptr);
+    envelopePercentageSlider.setLookAndFeel(nullptr);
+    filterModelCombo.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -134,8 +153,8 @@ void FilterTripAudioProcessorEditor::paint(juce::Graphics& g)
     //DRAWING ASSETS ON SCREEN
 
     auto bounds = getLocalBounds().toFloat();
-
-    g.setColour(juce::Colours::red);
+    
+    g.setColour(juce::Colour::fromRGB(173, 29, 29));
     juce::Path path;
 
     const float centerX = 409.11;
@@ -176,38 +195,6 @@ void FilterTripAudioProcessorEditor::paint(juce::Graphics& g)
 
 
 }
-
-    /*
-    g.setColour(juce::Colours::red);
-    juce::Path path;
-
-    const float centerX = 409.11;
-    const float centerY = 680.81;
-
-    const int numSamples = mEnvelopeBuffer.getNumSamples();
-
-    if (numSamples > 0) {
-        const int numPoints = std::min(100, numSamples); // Adjust the number of points for smoother circles
-
-        for (int i = 0; i < numPoints; i++) {
-            const float angle = juce::MathConstants<float>::twoPi * static_cast<float>(i) / numPoints;
-            const float radius = (getHeight() * 0.35) * mEnvelopeBuffer.getSample(0, i % numSamples); // Use the modulo to loop through numSamples
-
-            const float x = centerX + radius * std::cos(angle);
-            const float y = centerY + radius * std::sin(angle);
-
-            if (i == 0) {
-                path.startNewSubPath(x, y);
-            }
-            else {
-                path.lineTo(x, y);
-            }
-        }
-    }
-
-    g.strokePath(path, juce::PathStrokeType(10.0f));
-}
-*/
 
 
 
