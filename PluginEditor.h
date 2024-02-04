@@ -12,6 +12,7 @@
 #include "PluginProcessor.h"
 #include "LookAndFeel/DialLAF.h"
 #include "LookAndFeel/SliderLAF.h"
+#include "LookAndFeel/ButtonLAF.h"
 
 
 //==============================================================================
@@ -110,6 +111,7 @@ private:
 
     CustomDial customDialLAF;
     CustomSlider customSliderLAF;
+    CustomButton customButtonLAF;
 
 
 

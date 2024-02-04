@@ -17,6 +17,19 @@ public:
     CustomButton();
 
 
-    void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
-        const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider) override;
+    void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
+        bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
+
+    void drawButtonBackground(juce::Graphics& g,
+        juce::Button& button,
+        const juce::Colour& backgroundColour,
+        bool shouldDrawButtonAsHighlighted,
+        bool shouldDrawButtonAsDown) override;
+
+    void drawTickBox(juce::Graphics& g, juce::Component& component,
+        float x, float y, float w, float h,
+        const bool ticked,
+        [[maybe_unused]] const bool isEnabled,
+        [[maybe_unused]] const bool shouldDrawButtonAsHighlighted,
+        [[maybe_unused]] const bool shouldDrawButtonAsDown) override;
 };

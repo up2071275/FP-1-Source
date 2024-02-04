@@ -56,6 +56,10 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor(FilterTripAudioPr
     gainSlider.setLookAndFeel(&customSliderLAF);
     userCutoffSlider.setLookAndFeel(&customSliderLAF);
     envelopePercentageSlider.setLookAndFeel(&customSliderLAF);
+    lowpassButton.setLookAndFeel(&customButtonLAF);
+    bandpassButton.setLookAndFeel(&customButtonLAF);
+    highpassButton.setLookAndFeel(&customButtonLAF);
+
    
 
 
@@ -117,6 +121,9 @@ FilterTripAudioProcessorEditor::~FilterTripAudioProcessorEditor()
     gainSlider.setLookAndFeel(nullptr);
     userCutoffSlider.setLookAndFeel(nullptr);
     envelopePercentageSlider.setLookAndFeel(nullptr);
+    lowpassButton.setLookAndFeel(nullptr);
+    bandpassButton.setLookAndFeel(nullptr);
+    highpassButton.setLookAndFeel(nullptr);
     
 }
 
