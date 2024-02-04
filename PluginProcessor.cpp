@@ -20,11 +20,12 @@ FilterTripAudioProcessor::FilterTripAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        )
-    , _treeState(*this, nullptr, "PARAMETERS", createParameterLayout())
+    , _treeState(*this, nullptr, "PARAMETERS", createParameterLayout()),
+    currentFilterModel(0)
 #endif
 {
     addParameter(envelopeParam = new juce::AudioParameterFloat("envelope", "Envelope", 0.0f, 1.0f, 0.0f));
-
+    setFilterModel(0);
 
 }
 
@@ -46,14 +47,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout FilterTripAudioProcessor::cr
     auto pEnvelopePercentage = std::make_unique<juce::AudioParameterFloat>(envelopePercentageID, envelopePercentageName, 0., 1., 1.);
     auto pUserAttack = std::make_unique<juce::AudioParameterFloat>(userAttackID, userAttackName, 5, 500, 10);
     auto pUserRelease = std::make_unique<juce::AudioParameterFloat>(userReleaseID, userReleaseName, 25, 500, 50);
-    auto pFilterModel = std::make_unique < filterChoiceParameter>(*this);
+    //auto pFilterModel = std::make_unique<FilterChoiceParameter>(*this, "filterModel", 0);
 
     params.push_back(std::move(pGain));
     params.push_back(std::move(pMix));
     params.push_back(std::move(pOutput));
     params.push_back(std::move(pUserCutoff));
     params.push_back(std::move(pEnvelopePercentage));
-    params.push_back(std::move(pFilterModel));
+    //params.push_back(std::move(pFilterModel));
     params.push_back(std::move(pUserAttack));
     params.push_back(std::move(pUserRelease));
 
@@ -157,14 +158,16 @@ void FilterTripAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 
     //setting up filters
     _lowpassFilter.prepare(spec);
+    _highpassFilter.prepare(spec);
+    _bandpassFilter.prepare(spec);
     _lowpassFilter.setEnabled(true);
     _lowpassFilter.setMode(juce::dsp::LadderFilterMode::LPF24);
     //setting up filters
-    _highpassFilter.prepare(spec);
+    //_highpassFilter.prepare(spec);
     _highpassFilter.setEnabled(true);
     _highpassFilter.setMode(juce::dsp::LadderFilterMode::HPF24);
     //setting up filters
-    _bandpassFilter.prepare(spec);
+    //_bandpassFilter.prepare(spec);
     _bandpassFilter.setEnabled(true);
     _bandpassFilter.setMode(juce::dsp::LadderFilterMode::BPF24);
 
@@ -209,6 +212,39 @@ bool FilterTripAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
   #endif
 }
 #endif
+
+
+void FilterTripAudioProcessor::setFilterModel(int newModel)
+{
+    currentFilterModel = newModel;
+
+    // Handle logic based on the chosen filter model
+    switch (currentFilterModel)
+    {
+    case 0: // Lowpass
+        _lowpassFilter.setEnabled(true);
+        _highpassFilter.setEnabled(false);
+        _bandpassFilter.setEnabled(false);
+        break;
+    case 1: // Highpass
+        _lowpassFilter.setEnabled(false);
+        _highpassFilter.setEnabled(true);
+        _bandpassFilter.setEnabled(false);
+        break;
+    case 2: // Bandpass
+        _lowpassFilter.setEnabled(false);
+        _highpassFilter.setEnabled(false);
+        _bandpassFilter.setEnabled(true);
+        break;
+        // Add more cases if you have additional filter models
+    default:
+        break;
+    }
+
+    // You can add more logic as needed for handling the filter model change.
+}
+
+
 
 void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {

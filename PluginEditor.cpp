@@ -12,18 +12,19 @@
 
 
 //==============================================================================
-FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p),
+FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor(FilterTripAudioProcessor& p)
+    : AudioProcessorEditor(&p), audioProcessor(p),
     gainAttachtment(p._treeState, gainID, gainSlider),
     wetDryAttachtment(p._treeState, mixID, wetDrySlider),
     outputAttachtment(p._treeState, outputID, outputSlider),
     userCutoffAttachtment(p._treeState, userCutoffID, userCutoffSlider),
     envelopePercentageAttachtment(p._treeState, envelopePercentageID, envelopePercentageSlider),
     userAttackAttachtment(p._treeState, userAttackID, userAttackSlider),
-    userReleaseAttachtment(p._treeState, userReleaseID, userReleaseSlider),
+    userReleaseAttachtment(p._treeState, userReleaseID, userReleaseSlider)
 
-
-    filterModelAttachtment(p._treeState, filterModelID, filterModelCombo)
+    //lowpassFilterModelAttachtment(p._treeState, filterModelID, lowpassButton),
+    //bandpassFilterModelAttachtment(p._treeState, filterModelID, bandpassButton),
+    //highpassFilterModelAttachtment(p._treeState, filterModelID, highpassButton)
 {
 
     wetDrySlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
@@ -55,7 +56,7 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioP
     gainSlider.setLookAndFeel(&customSliderLAF);
     userCutoffSlider.setLookAndFeel(&customSliderLAF);
     envelopePercentageSlider.setLookAndFeel(&customSliderLAF);
-    filterModelCombo.setLookAndFeel(&customComboLAF);
+   
 
 
 
@@ -82,50 +83,28 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor (FilterTripAudioP
     addAndMakeVisible(gainSlider);
     addAndMakeVisible(userCutoffSlider);
     addAndMakeVisible(envelopePercentageSlider);
-    addAndMakeVisible(filterModelCombo);
+    //addAndMakeVisible(filterModelCombo);
     addAndMakeVisible(userAttackSlider);
     addAndMakeVisible(userReleaseSlider);
 
-    //addAndMakeVisible(wetDryLabel);
-    //addAndMakeVisible(outputLabel);
-    /*
-    addAndMakeVisible(gainLabel);
-    addAndMakeVisible(userCutoffLabel);
-    addAndMakeVisible(envelopePercentageLabel);
-    addAndMakeVisible(userAttackLabel);
-    addAndMakeVisible(userReleaseLabel);
+    addAndMakeVisible(lowpassButton);
+    addAndMakeVisible(bandpassButton);
+    addAndMakeVisible(highpassButton);
+
+    lowpassButton.onClick = [this] {updateToggleState(&lowpassButton, "Lowpass"); };
+    bandpassButton.onClick = [this] {updateToggleState(&bandpassButton, "Bandpass"); };
+    highpassButton.onClick = [this] {updateToggleState(&highpassButton, "Highpass"); };
+
+    lowpassButton.setRadioGroupId(FilterButtons);
+    bandpassButton.setRadioGroupId(FilterButtons);
+    highpassButton.setRadioGroupId(FilterButtons);
+    
 
 
-    wetDryLabel.setText("Wet/Dry", juce::dontSendNotification);
-    outputLabel.setText("Output", juce::dontSendNotification);
-    gainLabel.setText("Filter Gain", juce::dontSendNotification);
-    userCutoffLabel.setText("Filter Frequency", juce::dontSendNotification);
-    envelopePercentageLabel.setText("Envelope Percentage", juce::dontSendNotification);
-    userAttackLabel.setText("Filter Attack", juce::dontSendNotification);
-    userReleaseLabel.setText("Filter Release", juce::dontSendNotification);
-
-    wetDryLabel.attachToComponent(&wetDrySlider, false);
-    outputLabel.attachToComponent(&outputSlider, false);
-    gainLabel.attachToComponent(&gainSlider, false);
-    userCutoffLabel.attachToComponent(&userCutoffSlider, false);
-    envelopePercentageLabel.attachToComponent(&envelopePercentageSlider, false);
-    userAttackLabel.attachToComponent(&userAttackSlider, false);
-    userReleaseLabel.attachToComponent(&userReleaseSlider, false);
-
-    wetDryLabel.setJustificationType(juce::Justification::centred);
-    outputLabel.setJustificationType(juce::Justification::centred);
-    gainLabel.setJustificationType(juce::Justification::centred);
-    userCutoffLabel.setJustificationType(juce::Justification::centred);
-    envelopePercentageLabel.setJustificationType(juce::Justification::centred);
-    userAttackLabel.setJustificationType(juce::Justification::centred);
-    userReleaseLabel.setJustificationType(juce::Justification::centred);
-
-    */
-
+/*
     filterModelCombo.setTextWhenNothingSelected("Filter Model Selection");
     filterModelCombo.addItemList(audioProcessor.filterModels, 1);
-
-
+*/
     
 
 }
@@ -138,7 +117,7 @@ FilterTripAudioProcessorEditor::~FilterTripAudioProcessorEditor()
     gainSlider.setLookAndFeel(nullptr);
     userCutoffSlider.setLookAndFeel(nullptr);
     envelopePercentageSlider.setLookAndFeel(nullptr);
-    filterModelCombo.setLookAndFeel(nullptr);
+    
 }
 
 //==============================================================================
@@ -213,6 +192,10 @@ void FilterTripAudioProcessorEditor::resized()
     envelopePercentageSlider.setBounds(leftMargin * 3.85, topMargin * 3, 25, 166);
 
     filterModelCombo.setBounds(leftMargin * 36.65, topMargin * 1.085, 114, 48);
+
+    lowpassButton.setBounds(leftMargin*29.65, topMargin*0.675, 24, 24);
+    bandpassButton.setBounds(leftMargin * 36.85, topMargin * 0.675, 24, 24);
+    highpassButton.setBounds(leftMargin * 44.00, topMargin * 0.675, 24, 24);
 
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..

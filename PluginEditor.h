@@ -12,7 +12,6 @@
 #include "PluginProcessor.h"
 #include "LookAndFeel/DialLAF.h"
 #include "LookAndFeel/SliderLAF.h"
-#include "LookAndFeel/ComboLAF.h"
 
 
 //==============================================================================
@@ -23,6 +22,11 @@ class FilterTripAudioProcessorEditor  : public juce::AudioProcessorEditor, juce:
 public:
     FilterTripAudioProcessorEditor (FilterTripAudioProcessor&);
     ~FilterTripAudioProcessorEditor() override;
+
+    enum RadioButtonIds
+    {
+        FilterButtons = 1001
+    };
 
     void setEnvelope(const juce::AudioBuffer<float>& envelopeBuffer) {
         //investigate standard swap (std::swap)
@@ -36,6 +40,20 @@ public:
         
     };
     
+    void updateToggleState(juce::Button* button, juce::String name)
+    {
+        auto state = button->getToggleState();
+        juce::String stateString = state ? "ON" : "OFF";
+
+        juce::Logger::outputDebugString(name + " Button changed to " + stateString);
+
+        if (button == &lowpassButton && state)
+            audioProcessor.setFilterModel(0);
+        else if (button == &bandpassButton && state)
+            audioProcessor.setFilterModel(1);
+        else if (button == &highpassButton && state)
+            audioProcessor.setFilterModel(2);
+    }
 
 
 
@@ -80,14 +98,19 @@ private:
 
     juce::ComboBox filterModelCombo;
 
+    juce::ToggleButton lowpassButton{ "Lowpass" },
+                       bandpassButton{ "Bandpass" },
+                       highpassButton{ "Highpass" };
+
   
     juce::AudioProcessorValueTreeState::SliderAttachment wetDryAttachtment, outputAttachtment, gainAttachtment, userCutoffAttachtment, envelopePercentageAttachtment, userReleaseAttachtment, userAttackAttachtment;
-    juce::AudioProcessorValueTreeState::ComboBoxAttachment filterModelAttachtment;
+    //juce::AudioProcessorValueTreeState::ComboBoxAttachment filterModelAttachtment;
+    //juce::AudioProcessorValueTreeState::ButtonAttachment lowpassFilterModelAttachtment, bandpassFilterModelAttachtment, highpassFilterModelAttachtment;
     
 
     CustomDial customDialLAF;
     CustomSlider customSliderLAF;
-    CustomCombo customComboLAF;
+
 
 
 
