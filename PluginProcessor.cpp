@@ -43,11 +43,29 @@ juce::AudioProcessorValueTreeState::ParameterLayout FilterTripAudioProcessor::cr
     auto pGain = std::make_unique<juce::AudioParameterFloat>(gainID, gainName, 0.0f, 24.0f, 10.0f);
     auto pMix = std::make_unique<juce::AudioParameterFloat>(mixID, mixName, 0.0f, 1.0f, 1.0f);
     auto pOutput = std::make_unique<juce::AudioParameterFloat>(outputID, outputName, -24.0f, 24.0f, 1.0f);
-    auto pUserCutoff = std::make_unique<juce::AudioParameterFloat>(userCutoffID, userCutoffName, 50, 20000, 12500);
+    //auto pUserCutoff = std::make_unique<juce::AudioParameterFloat>(userCutoffID, userCutoffName, 50, 20000, 12500);
     auto pEnvelopePercentage = std::make_unique<juce::AudioParameterFloat>(envelopePercentageID, envelopePercentageName, 0., 1., 1.);
     auto pUserAttack = std::make_unique<juce::AudioParameterFloat>(userAttackID, userAttackName, 5, 500, 10);
     auto pUserRelease = std::make_unique<juce::AudioParameterFloat>(userReleaseID, userReleaseName, 25, 500, 50);
     //auto pFilterModel = std::make_unique<FilterChoiceParameter>(*this, "filterModel", 0);
+
+
+
+    auto pUserCutoff = std::make_unique<juce::AudioParameterFloat>(
+        userCutoffID, // Parameter ID
+        userCutoffName, // Parameter Name
+        juce::NormalisableRange<float>(50.0f, 20000.0f, [](float start, float end, float t) {
+            // Custom mapping function: exponential mapping
+            return start * pow(end / start, t);
+            }, [](float start, float end, float value) {
+                // Custom unmapping function: inverse of exponential mapping
+                return std::log(value / start) / std::log(end / start);
+            }),
+        12500.0f // Default value
+                );
+
+
+
 
     params.push_back(std::move(pGain));
     params.push_back(std::move(pMix));
@@ -303,6 +321,42 @@ void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     auto envelopePercentage = _treeState.getParameter(envelopePercentageID)->getValue();               //THESE WILL BE USER CONTROLLED RANGE OF 0 to 1 but is a percentage
     envelopePercentage *= 100;
 
+
+ 
+
+
+    double cutOff = *userCutoff + (((envelope * (envelopePercentage)) * (*userCutoff)));
+
+    double bandwidth = *userCutoff / 100;
+
+    double bandpassCenter = cutOff;
+    double bandpassWidth = bandwidth; // You need to define the bandwidth
+    double highPasscutOff = bandpassCenter + (bandpassWidth / 2.0);
+
+    cutOff = juce::jlimit(50., 20000., cutOff);
+
+    highPasscutOff = juce::jlimit(50., 20000., cutOff);
+
+    _lowpassFilter.setCutoffFrequencyHz(cutOff);
+    _highpassFilter.setCutoffFrequencyHz(highPasscutOff);
+    _bandpassFilter.setCutoffFrequencyHz(bandpassCenter); // Set center frequency for band-pass filter
+
+
+    _lowpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
+    _highpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
+    _bandpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
+    //FILTER PROCESSING
+
+    /*
+    //FILTER PROCESSING
+    juce::dsp::AudioBlock<float> filterBlock{ buffer };
+
+
+    auto userCutoff = _treeState.getRawParameterValue(userCutoffID);                      //THESE WILL BE USER CONTROLLED
+    auto envelopePercentage = _treeState.getParameter(envelopePercentageID)->getValue();               //THESE WILL BE USER CONTROLLED RANGE OF 0 to 1 but is a percentage
+    envelopePercentage *= 100;
+
+
     double cutOff = *userCutoff + (((envelope * (envelopePercentage)) * (*userCutoff)));
 
     double highPasscutOff = *userCutoff - (((envelope * (envelopePercentage)) * (*userCutoff)));
@@ -316,11 +370,12 @@ void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     _bandpassFilter.setCutoffFrequencyHz(cutOff);
 
 
+
     _lowpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
     _highpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
     _bandpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
     //FILTER PROCESSING
-    
+    */
 
 
 
