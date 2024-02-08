@@ -173,6 +173,7 @@ void FilterTripAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 
     // Set up the audio buffer
     envelopeBuffer.setSize(1, samplesPerBlock);
+    //envelopeBuffer.setSize(2, samplesPerBlock);
     // Set up the envelope follower parameters
     samplerate = sampleRate;
     attack_coef = exp(log(0.01) / (attack_in_ms * samplerate * 0.001));
@@ -226,15 +227,15 @@ void FilterTripAudioProcessor::setFilterModel(int newModel)
         _highpassFilter.setEnabled(false);
         _bandpassFilter.setEnabled(false);
         break;
-    case 1: // Highpass
-        _lowpassFilter.setEnabled(false);
-        _highpassFilter.setEnabled(true);
-        _bandpassFilter.setEnabled(false);
-        break;
-    case 2: // Bandpass
+    case 1: // Bandpass
         _lowpassFilter.setEnabled(false);
         _highpassFilter.setEnabled(false);
         _bandpassFilter.setEnabled(true);
+        break;
+    case 2: // Highpass
+        _lowpassFilter.setEnabled(false);
+        _highpassFilter.setEnabled(true);
+        _bandpassFilter.setEnabled(false);
         break;
         // Add more cases if you have additional filter models
     default:
@@ -243,7 +244,6 @@ void FilterTripAudioProcessor::setFilterModel(int newModel)
 
     // You can add more logic as needed for handling the filter model change.
 }
-
 
 
 void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -315,31 +315,12 @@ void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     _highpassFilter.setCutoffFrequencyHz(highPasscutOff);
     _bandpassFilter.setCutoffFrequencyHz(cutOff);
 
-    /*
-    auto wetBuffer(filterBlock);
-
-    auto mixParam = _treeState.getParameter(mixID);
-    auto mixVal = mixParam->getValue();
-
-    for (auto i = 0; i < filterBlock.getNumChannels(); ++i)
-    {
-        for (auto n = 0; n < filterBlock.getNumSamples(); ++n)
-        {
-            auto dryValue = filterBlock.getSample(i, n);
-            auto wetValue = wetBuffer.getSample(i, n);
-            filterBlock.setSample(i, n, (wetValue * mixVal) + (dryValue * (1.0 - mixVal)));
-        }
-    }
-    */
-
 
     _lowpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
     _highpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
     _bandpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
     //FILTER PROCESSING
-
-    //DBG(envelope);
-
+    
 
 
 
@@ -357,6 +338,7 @@ void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
         // ..do something to the data...
     }
+   
 }
 
 //==============================================================================
