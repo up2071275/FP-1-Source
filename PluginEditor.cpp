@@ -27,16 +27,16 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor(FilterTripAudioPr
     //highpassFilterModelAttachtment(p._treeState, filterModelID, highpassButton)
 {
 
-    wetDrySlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    outputSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    //wetDrySlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    //outputSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     userCutoffSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     envelopePercentageSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     userAttackSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     userReleaseSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
 
-    wetDrySlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
-    outputSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
+    //wetDrySlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
+    //outputSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
     gainSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 60, 20);
     userCutoffSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 60, 20);
     //userCutoffSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 60, 20);
@@ -44,8 +44,8 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor(FilterTripAudioPr
     userAttackSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 60, 20);
     userReleaseSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 60, 20);
 
-    wetDrySlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
-    outputSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
+    //wetDrySlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
+    //outputSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
     gainSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
     userCutoffSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
     envelopePercentageSlider.setRotaryParameters(0, juce::MathConstants<float>::twoPi, true);
@@ -61,7 +61,7 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor(FilterTripAudioPr
     bandpassButton.setLookAndFeel(&customButtonLAF);
     highpassButton.setLookAndFeel(&customButtonLAF);
 
-   
+
 
 
 
@@ -74,7 +74,7 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor(FilterTripAudioPr
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    
+
     setResizable(false, false);
     //setResizeLimits(420, 270, 1680, 1080);
     //getConstrainer()->setFixedAspectRatio(1.55);
@@ -103,14 +103,14 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor(FilterTripAudioPr
     lowpassButton.setRadioGroupId(FilterButtons);
     bandpassButton.setRadioGroupId(FilterButtons);
     highpassButton.setRadioGroupId(FilterButtons);
-    
 
 
-/*
-    filterModelCombo.setTextWhenNothingSelected("Filter Model Selection");
-    filterModelCombo.addItemList(audioProcessor.filterModels, 1);
-*/
-    
+
+    /*
+        filterModelCombo.setTextWhenNothingSelected("Filter Model Selection");
+        filterModelCombo.addItemList(audioProcessor.filterModels, 1);
+    */
+
 
 }
 
@@ -125,7 +125,7 @@ FilterTripAudioProcessorEditor::~FilterTripAudioProcessorEditor()
     lowpassButton.setLookAndFeel(nullptr);
     bandpassButton.setLookAndFeel(nullptr);
     highpassButton.setLookAndFeel(nullptr);
-    
+
 }
 
 //==============================================================================
@@ -140,7 +140,7 @@ void FilterTripAudioProcessorEditor::paint(juce::Graphics& g)
     //DRAWING ASSETS ON SCREEN
 
     auto bounds = getLocalBounds().toFloat();
-    
+
     g.setColour(juce::Colour::fromRGB(173, 29, 29));
     juce::Path path;
 
@@ -192,7 +192,7 @@ void FilterTripAudioProcessorEditor::resized()
     auto sliderSize = getWidth() * 0.15;
     auto sliderYpos = topMargin * 4.75;
 
-    userAttackSlider.setBounds(leftMargin *1.25, topMargin * 4.425, 106, 106);
+    userAttackSlider.setBounds(leftMargin * 1.25, topMargin * 4.425, 106, 106);
     userReleaseSlider.setBounds(leftMargin * 1.25, topMargin * 5.275, 106, 106);
 
     gainSlider.setBounds(leftMargin * 10.75, topMargin * 3.01, 25, 166);
@@ -201,7 +201,7 @@ void FilterTripAudioProcessorEditor::resized()
 
     filterModelCombo.setBounds(leftMargin * 36.65, topMargin * 1.085, 114, 48);
 
-    lowpassButton.setBounds(leftMargin*29.65, topMargin*0.675, 24, 24);
+    lowpassButton.setBounds(leftMargin * 29.65, topMargin * 0.675, 24, 24);
     bandpassButton.setBounds(leftMargin * 36.85, topMargin * 0.675, 24, 24);
     highpassButton.setBounds(leftMargin * 44.00, topMargin * 0.675, 24, 24);
 
