@@ -13,6 +13,7 @@
 #include "LookAndFeel/DialLAF.h"
 #include "LookAndFeel/SliderLAF.h"
 #include "LookAndFeel/ButtonLAF.h"
+#include "LookAndFeel/LabelLAF.h"
 
 
 //==============================================================================
@@ -95,6 +96,7 @@ private:
     juce::Label userAttackLabel;
     juce::Label userReleaseLabel;
 
+    juce::Label cutoffValueLabel;
 
 
     juce::ComboBox filterModelCombo;
@@ -112,6 +114,8 @@ private:
     CustomDial customDialLAF;
     CustomSlider customSliderLAF;
     CustomButton customButtonLAF;
+
+    CustomLabel customLabelLAF;
 
 
 

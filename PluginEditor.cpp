@@ -96,6 +96,9 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor(FilterTripAudioPr
     addAndMakeVisible(bandpassButton);
     addAndMakeVisible(highpassButton);
 
+
+
+
     lowpassButton.onClick = [this] {updateToggleState(&lowpassButton, "Lowpass"); };
     bandpassButton.onClick = [this] {updateToggleState(&bandpassButton, "Bandpass"); };
     highpassButton.onClick = [this] {updateToggleState(&highpassButton, "Highpass"); };
@@ -104,6 +107,17 @@ FilterTripAudioProcessorEditor::FilterTripAudioProcessorEditor(FilterTripAudioPr
     bandpassButton.setRadioGroupId(FilterButtons);
     highpassButton.setRadioGroupId(FilterButtons);
 
+
+
+    cutoffValueLabel.setLookAndFeel(&customLabelLAF);
+    addAndMakeVisible(cutoffValueLabel);
+    cutoffValueLabel.setText(juce::String(static_cast<int>(userCutoffSlider.getValue())), juce::dontSendNotification);
+
+    userCutoffSlider.onValueChange = [this]() {
+        cutoffValueLabel.setText(juce::String(static_cast<int>(userCutoffSlider.getValue())), juce::dontSendNotification);
+        };
+
+    
 
 
     /*
@@ -125,6 +139,8 @@ FilterTripAudioProcessorEditor::~FilterTripAudioProcessorEditor()
     lowpassButton.setLookAndFeel(nullptr);
     bandpassButton.setLookAndFeel(nullptr);
     highpassButton.setLookAndFeel(nullptr);
+    cutoffValueLabel.setLookAndFeel(nullptr);
+ 
 
 }
 
@@ -196,8 +212,12 @@ void FilterTripAudioProcessorEditor::resized()
     userReleaseSlider.setBounds(leftMargin * 1.25, topMargin * 5.275, 106, 106);
 
     gainSlider.setBounds(leftMargin * 10.75, topMargin * 3.01, 25, 166);
-    userCutoffSlider.setBounds(leftMargin * 33.8, topMargin * 1.675, 166, 25);
     envelopePercentageSlider.setBounds(leftMargin * 3.85, topMargin * 3, 25, 166);
+
+    userCutoffSlider.setBounds(leftMargin * 33.8, topMargin * 1.675, 166, 25);
+    cutoffValueLabel.setBounds(leftMargin * 23.5, topMargin * 1.675, 100, 25);
+
+    
 
     filterModelCombo.setBounds(leftMargin * 36.65, topMargin * 1.085, 114, 48);
 

@@ -40,7 +40,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout FilterTripAudioProcessor::cr
     std::vector <std::unique_ptr<juce::RangedAudioParameter>> params;
     //UI INPUTS -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //juce::StringArray filterModels = { "Lowpass","Highpass","Bandpass" };
-    auto pGain = std::make_unique<juce::AudioParameterFloat>(gainID, gainName, 0.0f, 24.0f, 10.0f);
+    auto pGain = std::make_unique<juce::AudioParameterFloat>(gainID, gainName, 0.0f, 14.0f, 0.0f);
     auto pMix = std::make_unique<juce::AudioParameterFloat>(mixID, mixName, 0.0f, 1.0f, 1.0f);
     auto pOutput = std::make_unique<juce::AudioParameterFloat>(outputID, outputName, -24.0f, 24.0f, 1.0f);
     //auto pUserCutoff = std::make_unique<juce::AudioParameterFloat>(userCutoffID, userCutoffName, 50, 20000, 12500);
@@ -324,7 +324,26 @@ void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
  
 
+    
+    double cutOff = *userCutoff + (((envelope * (envelopePercentage)) * (*userCutoff)));
 
+    double highPassCutOff = *userCutoff - (((envelope * envelopePercentage) * (*userCutoff)));
+
+    double bandwidth = *userCutoff / 100;
+
+    double bandpassCenter = cutOff;
+    double bandpassWidth = bandwidth; // You need to define the bandwidth
+    double bandPasscutOff = bandpassCenter + (bandpassWidth / 2.0);
+    
+    cutOff = juce::jlimit(50., 20000., cutOff);
+
+    highPassCutOff = juce::jlimit(50., 20000., cutOff);
+    
+    _lowpassFilter.setCutoffFrequencyHz(cutOff);
+    _highpassFilter.setCutoffFrequencyHz(highPassCutOff);
+    _bandpassFilter.setCutoffFrequencyHz(bandPasscutOff); // Set center frequency for band-pass filter
+
+    /*
     double cutOff = *userCutoff + (((envelope * (envelopePercentage)) * (*userCutoff)));
 
     double bandwidth = *userCutoff / 100;
@@ -340,44 +359,15 @@ void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     _lowpassFilter.setCutoffFrequencyHz(cutOff);
     _highpassFilter.setCutoffFrequencyHz(highPasscutOff);
     _bandpassFilter.setCutoffFrequencyHz(bandpassCenter); // Set center frequency for band-pass filter
-
-
-    _lowpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
-    _highpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
-    _bandpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
-    //FILTER PROCESSING
-
-    /*
-    //FILTER PROCESSING
-    juce::dsp::AudioBlock<float> filterBlock{ buffer };
-
-
-    auto userCutoff = _treeState.getRawParameterValue(userCutoffID);                      //THESE WILL BE USER CONTROLLED
-    auto envelopePercentage = _treeState.getParameter(envelopePercentageID)->getValue();               //THESE WILL BE USER CONTROLLED RANGE OF 0 to 1 but is a percentage
-    envelopePercentage *= 100;
-
-
-    double cutOff = *userCutoff + (((envelope * (envelopePercentage)) * (*userCutoff)));
-
-    double highPasscutOff = *userCutoff - (((envelope * (envelopePercentage)) * (*userCutoff)));
-
-    cutOff = juce::jlimit(50.,20000.,cutOff);
-
-    highPasscutOff = juce::jlimit(50., 20000., cutOff);
-
-    _lowpassFilter.setCutoffFrequencyHz(cutOff);
-    _highpassFilter.setCutoffFrequencyHz(highPasscutOff);
-    _bandpassFilter.setCutoffFrequencyHz(cutOff);
-
-
-
-    _lowpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
-    _highpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
-    _bandpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
-    //FILTER PROCESSING
     */
 
 
+
+
+    _lowpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
+    _highpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
+    _bandpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
+   
 
 
 
