@@ -279,16 +279,13 @@ void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-
-
-
     auto userAttack = _treeState.getRawParameterValue(userAttackID);
     auto userRelease = _treeState.getRawParameterValue(userReleaseID);
 
     attack_coef = exp(log(0.01) / (*userAttack * samplerate * 0.001));
     release_coef = exp(log(0.01) / (*userRelease * samplerate * 0.001));
 
-
+    
     // Process the audio buffer with the envelope follower
     int numSamples = buffer.getNumSamples();
     for (int i = 0; i < numSamples; i++)
@@ -307,68 +304,50 @@ void FilterTripAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
         envelopeBuffer.setSample(0,i,envelope);
 
-
-
-
-
     }
+    
+
+
+   
 
     //FILTER PROCESSING
     juce::dsp::AudioBlock<float> filterBlock{ buffer };
 
-
+    
+    
     auto userCutoff = _treeState.getRawParameterValue(userCutoffID);                      //THESE WILL BE USER CONTROLLED
     auto envelopePercentage = _treeState.getParameter(envelopePercentageID)->getValue();               //THESE WILL BE USER CONTROLLED RANGE OF 0 to 1 but is a percentage
     envelopePercentage *= 100;
 
-
  
-
-    
     double cutOff = *userCutoff + (((envelope * (envelopePercentage)) * (*userCutoff)));
+ 
 
     double highPassCutOff = *userCutoff - (((envelope * envelopePercentage) * (*userCutoff)));
 
     double bandwidth = *userCutoff / 100;
 
     double bandpassCenter = cutOff;
-    double bandpassWidth = bandwidth; // You need to define the bandwidth
+    double bandpassWidth = bandwidth; 
     double bandPasscutOff = bandpassCenter + (bandpassWidth / 2.0);
-    
+
+ 
+
     cutOff = juce::jlimit(50., 20000., cutOff);
 
     highPassCutOff = juce::jlimit(50., 20000., cutOff);
-    
+
+
+
     _lowpassFilter.setCutoffFrequencyHz(cutOff);
     _highpassFilter.setCutoffFrequencyHz(highPassCutOff);
-    _bandpassFilter.setCutoffFrequencyHz(bandPasscutOff); // Set center frequency for band-pass filter
-
-    /*
-    double cutOff = *userCutoff + (((envelope * (envelopePercentage)) * (*userCutoff)));
-
-    double bandwidth = *userCutoff / 100;
-
-    double bandpassCenter = cutOff;
-    double bandpassWidth = bandwidth; // You need to define the bandwidth
-    double highPasscutOff = bandpassCenter + (bandpassWidth / 2.0);
-
-    cutOff = juce::jlimit(50., 20000., cutOff);
-
-    highPasscutOff = juce::jlimit(50., 20000., cutOff);
-
-    _lowpassFilter.setCutoffFrequencyHz(cutOff);
-    _highpassFilter.setCutoffFrequencyHz(highPasscutOff);
-    _bandpassFilter.setCutoffFrequencyHz(bandpassCenter); // Set center frequency for band-pass filter
-    */
-
-
+    _bandpassFilter.setCutoffFrequencyHz(bandPasscutOff); 
 
 
     _lowpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
     _highpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
     _bandpassFilter.process(juce::dsp::ProcessContextReplacing<float>(filterBlock));
    
-
 
 
     // This is the place where you'd normally do the guts of your plugin's
